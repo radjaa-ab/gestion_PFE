@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type UserType = 'admin' | 'teacher' | 'student' | 'company'
 
@@ -95,18 +96,20 @@ export default function Dashboard() {
     <div>
       <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
       <div className="mb-4">
-        <select 
-          value={userType} 
-          onChange={(e) => setUserType(e.target.value as UserType)}
-          className="p-2 border rounded"
-        >
-          <option value="admin">Admin</option>
-          <option value="teacher">Teacher</option>
-          <option value="student">Student</option>
-          <option value="company">Company</option>
-        </select>
+        <Select value={userType} onValueChange={(value: UserType) => setUserType(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select user type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="teacher">Teacher</SelectItem>
+            <SelectItem value="student">Student</SelectItem>
+            <SelectItem value="company">Company</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       {renderDashboard()}
     </div>
   )
 }
+
