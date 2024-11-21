@@ -2,69 +2,72 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
 import { Search, Plus, Eye, Edit, Trash2 } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-const initialProjects = [
-  { id: 1, title: 'AI Research', supervisor: 'Dr. Smith', status: 'In Progress', type: 'Research', deadline: '2023-12-31' },
-  { id: 2, title: 'Web App Development', supervisor: 'Prof. Johnson', status: 'Completed', type: 'Development', deadline: '2023-11-15' },
-  { id: 3, title: 'Data Analysis', supervisor: 'Dr. Brown', status: 'Pending', type: 'Analysis', deadline: '2024-01-31' },
-  { id: 4, title: 'Mobile App', supervisor: 'Prof. Davis', status: 'In Progress', type: 'Development', deadline: '2024-02-28' },
-  { id: 5, title: 'Machine Learning Model', supervisor: 'Dr. Wilson', status: 'In Progress', type: 'Research', deadline: '2024-03-15' },
-]
+interface ProjectNotification {
+  id: number;
+  type: 'default' | 'destructive' | 'warning';
+  message: string;
+}
+
+interface Project {
+  id: number;
+  title: string;
+  supervisor: string;
+  status: 'Pending' | 'In Progress' | 'Completed';
+  type: string;
+}
 
 export default function Projects() {
+  const [projectNotifications, setProjectNotifications] = useState<ProjectNotification[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [projects, setProjects] = useState(initialProjects)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [newProject, setNewProject] = useState({
+  const [newProject, setNewProject] = useState<Omit<Project, 'id'>>({
     title: '',
     supervisor: '',
-    status: '',
-    type: '',
-    deadline: ''
+    status: 'Pending',
+    type: ''
   })
   const { toast } = useToast()
-  const [alerts, setAlerts] = useState([])
 
   useEffect(() => {
-    // Check for approaching deadlines
-    const today = new Date()
-    const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
-    
-    const newAlerts = projects.filter(project => {
-      const deadline = new Date(project.deadline)
-      return deadline > today && deadline <= oneWeekFromNow
-    }).map(project => ({
-      id: project.id,
-      type: 'warning',
-      message: `Project "${project.title}" deadline is approaching (${project.deadline})`
-    }))
+    // Simulating fetching project notifications and projects
+    const fetchedNotifications: ProjectNotification[] = [
+      { id: 1, type: 'default', message: 'New project proposal submitted.' },
+      { id: 2, type: 'warning', message: 'Project deadline approaching.' },
+      { id: 3, type: 'destructive', message: 'Project resources depleted.' },
+    ]
+    setProjectNotifications(fetchedNotifications)
 
-    setAlerts(newAlerts)
-  }, [projects])
+    const fetchedProjects: Project[] = [
+      { id: 1, title: 'AI Research', supervisor: 'Dr. Smith', status: 'In Progress', type: 'Research' },
+      { id: 2, title: 'Web App Development', supervisor: 'Prof. Johnson', status: 'Completed', type: 'Development' },
+      { id: 3, title: 'Data Analysis', supervisor: 'Dr. Brown', status: 'Pending', type: 'Analysis' },
+    ]
+    setProjects(fetchedProjects)
+  }, [])
 
-  const filteredProjects = projects.filter(project => 
-    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.supervisor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.type.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleDismissNotification = (id: number) => {
+    setProjectNotifications(prev => prev.filter(notification => notification.id !== id))
+    toast({
+      title: "Notification dismissed",
+      description: "The project notification has been removed.",
+    })
+  }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setNewProject(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name: 'status' | 'type', value: string) => {
     setNewProject(prev => ({ ...prev, [name]: value }))
   }
 
@@ -77,7 +80,7 @@ export default function Projects() {
       description: `${newProject.title} has been successfully added.`,
     })
     setIsDialogOpen(false)
-    setNewProject({ title: '', supervisor: '', status: '', type: '', deadline: '' })
+    setNewProject({ title: '', supervisor: '', status: 'Pending', type: '' })
   }
 
   const handleDelete = (id: number) => {
@@ -89,14 +92,38 @@ export default function Projects() {
     })
   }
 
-  const handleAlertDismiss = (id: number) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== id))
-  }
+  const filteredProjects = projects.filter(project => 
+    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.supervisor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.type.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Projects</h2>
+      
+      {projectNotifications.map((notification) => (
+        <Alert key={notification.id} variant={notification.type === 'warning' ? 'default' : notification.type}>
+          <AlertTitle>{notification.type === 'destructive' ? 'Error' : notification.type === 'warning' ? 'Warning' : 'Info'}</AlertTitle>
+          <AlertDescription>{notification.message}</AlertDescription>
+          <Button variant="outline" size="sm" onClick={() => handleDismissNotification(notification.id)}>
+            Dismiss
+          </Button>
+        </Alert>
+      ))}
+
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Projects</h2>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            type="text"
+            placeholder="Search projects..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -109,15 +136,15 @@ export default function Projects() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Project Title</Label>
+                <label htmlFor="title">Project Title</label>
                 <Input id="title" name="title" value={newProject.title} onChange={handleInputChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="supervisor">Supervisor</Label>
+                <label htmlFor="supervisor">Supervisor</label>
                 <Input id="supervisor" name="supervisor" value={newProject.supervisor} onChange={handleInputChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <label htmlFor="status">Status</label>
                 <Select onValueChange={(value) => handleSelectChange('status', value)} value={newProject.status}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -130,7 +157,7 @@ export default function Projects() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="type">Project Type</Label>
+                <label htmlFor="type">Project Type</label>
                 <Select onValueChange={(value) => handleSelectChange('type', value)} value={newProject.type}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select project type" />
@@ -142,10 +169,6 @@ export default function Projects() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="deadline">Deadline</Label>
-                <Input id="deadline" name="deadline" type="date" value={newProject.deadline} onChange={handleInputChange} required />
-              </div>
               <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
                 <Button type="submit">Create Project</Button>
@@ -155,33 +178,11 @@ export default function Projects() {
         </Dialog>
       </div>
 
-      {alerts.map((alert) => (
-        <Alert key={alert.id} variant={alert.type}>
-          <AlertTitle>Warning</AlertTitle>
-          <AlertDescription>{alert.message}</AlertDescription>
-          <Button variant="outline" size="sm" onClick={() => handleAlertDismiss(alert.id)}>
-            Dismiss
-          </Button>
-        </Alert>
-      ))}
-
       <Card>
         <CardHeader>
           <CardTitle>Project Management</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between mb-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                type="text"
-                placeholder="Search projects..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -189,7 +190,6 @@ export default function Projects() {
                 <TableHead>Supervisor</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Deadline</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -204,7 +204,6 @@ export default function Projects() {
                     </Badge>
                   </TableCell>
                   <TableCell>{project.type}</TableCell>
-                  <TableCell>{project.deadline}</TableCell>
                   <TableCell>
                     <Button variant="ghost" size="sm">
                       <Eye className="h-4 w-4" />
@@ -220,25 +219,6 @@ export default function Projects() {
               ))}
             </TableBody>
           </Table>
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
         </CardContent>
       </Card>
     </div>

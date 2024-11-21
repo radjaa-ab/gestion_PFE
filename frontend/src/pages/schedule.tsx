@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Calendar } from "@/components/ui/calendar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, X } from 'lucide-react'
-import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
+import { Plus, X } from 'lucide-react'
 
-type Event = {
+interface ScheduleNotification {
+  id: number;
+  type: 'default' | 'destructive';
+  message: string;
+}
+
+interface Event {
   id: number;
   title: string;
   date: Date;
@@ -26,24 +32,31 @@ export default function Schedule() {
     date: new Date(),
     type: 'meeting'
   })
+  const [scheduleNotifications, setScheduleNotifications] = useState<ScheduleNotification[]>([])
   const { toast } = useToast()
-  const [alerts, setAlerts] = useState<{ id: number; message: string }[]>([])
 
   useEffect(() => {
-    // Check for upcoming events
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    // Simulating fetching schedule notifications and events
+    const fetchedNotifications: ScheduleNotification[] = [
+      { id: 1, type: 'default', message: 'New event added to your schedule.' },
+      { id: 2, type: 'destructive', message: 'Scheduling conflict detected.' },
+    ]
+    setScheduleNotifications(fetchedNotifications)
 
-    const upcomingEvents = events.filter(event => 
-      event.date >= today && event.date <= tomorrow
-    )
+    const fetchedEvents: Event[] = [
+      { id: 1, title: 'Team Meeting', date: new Date('2023-10-15'), type: 'meeting' },
+      { id: 2, title: 'Project Deadline', date: new Date('2023-10-31'), type: 'deadline' },
+    ]
+    setEvents(fetchedEvents)
+  }, [])
 
-    setAlerts(upcomingEvents.map(event => ({
-      id: event.id,
-      message: `Upcoming ${event.type}: ${event.title} on ${event.date.toLocaleDateString()}`
-    })))
-  }, [events])
+  const handleDismissNotification = (id: number) => {
+    setScheduleNotifications(prev => prev.filter(notification => notification.id !== id))
+    toast({
+      title: "Notification dismissed",
+      description: "The schedule notification has been removed.",
+    })
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -72,14 +85,31 @@ export default function Schedule() {
     setNewEvent({ title: '', date: new Date(), type: 'meeting' })
   }
 
-  const handleAlertDismiss = (id: number) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== id))
+  const handleDeleteEvent = (id: number) => {
+    setEvents(prev => prev.filter(event => event.id !== id))
+    toast({
+      title: "Event removed",
+      description: "The event has been removed from the schedule.",
+      variant: "destructive",
+    })
   }
 
   return (
     <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Schedule</h2>
+      
+      {scheduleNotifications.map((notification) => (
+        <Alert key={notification.id} variant={notification.type}>
+          <AlertTitle>{notification.type === 'destructive' ? 'Error' : 'Info'}</AlertTitle>
+          <AlertDescription>{notification.message}</AlertDescription>
+          <Button variant="outline" size="sm" onClick={() => handleDismissNotification(notification.id)}>
+            Dismiss
+          </Button>
+        </Alert>
+      ))}
+
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-foreground">Schedule</h2>
+        <h3 className="text-xl font-semibold">Calendar</h3>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -126,22 +156,9 @@ export default function Schedule() {
         </Dialog>
       </div>
 
-      {alerts.map((alert) => (
-        <Alert key={alert.id} variant="warning">
-          <AlertTitle>Upcoming Event</AlertTitle>
-          <AlertDescription>{alert.message}</AlertDescription>
-          <Button variant="outline" size="sm" onClick={() => handleAlertDismiss(alert.id)}>
-            Dismiss
-          </Button>
-        </Alert>
-      ))}
-
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="bg-background border border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground">Calendar</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <Calendar
               mode="single"
               selected={date}
@@ -164,14 +181,7 @@ export default function Schedule() {
                       {event.date.toLocaleDateString()} - {event.type}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setEvents(prev => prev.filter(e => e.id !== event.id))
-                    toast({
-                      title: "Event removed",
-                      description: `${event.title} has been removed from the schedule.`,
-                      variant: "destructive",
-                    })
-                  }}>
+                  <Button variant="outline" size="sm" onClick={() => handleDeleteEvent(event.id)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </li>
