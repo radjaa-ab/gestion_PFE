@@ -1,36 +1,92 @@
 import React from 'react';
-import { Bell, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Link as RouterLink } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, InputBase, IconButton, Badge } from '@mui/material';
+import { styled, alpha } from '@mui/material/styles';
+import { Search as SearchIcon, Notifications as NotificationsIcon, Menu as MenuIcon } from '@mui/icons-material';
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+}));
 
 export function Header() {
   return (
-    <header className="w-full bg-background border-b border-border">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <SidebarTrigger className="md:hidden mr-2" />
-            <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
-          </div>
-          <div className="flex items-center">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search..."
-                className="w-full sm:w-64 pl-10 pr-4 rounded-full"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </div>
-            <Button variant="ghost" size="icon" className="ml-4">
-              <Bell className="h-5 w-5 text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </header>
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Toolbar>
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="open drawer"
+          sx={{ mr: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
+          PFE Platform
+        </Typography>
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase
+            placeholder="Search…"
+            inputProps={{ 'aria-label': 'search' }}
+          />
+        </Search>
+        <div style={{ flexGrow: 1 }} />
+        <IconButton
+          size="large"
+          aria-label="show 17 new notifications"
+          color="inherit"
+          component={RouterLink}
+          to="/notifications"
+        >
+          <Badge badgeContent={17} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 }
 

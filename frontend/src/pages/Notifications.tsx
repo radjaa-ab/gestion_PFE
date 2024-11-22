@@ -65,34 +65,34 @@ export default function Notifications() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Notifications</h2>
+    <div className="flex flex-col h-[calc(100vh-theme(spacing.16)-theme(spacing.12))]">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Notifications</h2>
+      <div className="flex justify-between items-center mb-4">
         <Badge variant="secondary" className="text-sm">
           {unreadCount} unread
         </Badge>
+        <div className="flex items-center space-x-2">
+          <Select value={filter} onValueChange={(value: NotificationType) => setFilter(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter notifications" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Notifications</SelectItem>
+              <SelectItem value="info">Information</SelectItem>
+              <SelectItem value="warning">Warnings</SelectItem>
+              <SelectItem value="success">Success</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" onClick={handleMarkAllAsRead}>
+            Mark all as read
+          </Button>
+        </div>
       </div>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card className="flex-1 overflow-hidden">
+        <CardHeader>
           <CardTitle className="text-xl font-bold">Your Notifications</CardTitle>
-          <div className="flex items-center space-x-2">
-            <Select value={filter} onValueChange={(value: NotificationType) => setFilter(value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter notifications" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Notifications</SelectItem>
-                <SelectItem value="info">Information</SelectItem>
-                <SelectItem value="warning">Warnings</SelectItem>
-                <SelectItem value="success">Success</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" onClick={handleMarkAllAsRead}>
-              Mark all as read
-            </Button>
-          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="h-[calc(100%-5rem)] overflow-auto">
           {filteredNotifications.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-4">No notifications to display.</p>
           ) : (

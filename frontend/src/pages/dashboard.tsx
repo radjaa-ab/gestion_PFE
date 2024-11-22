@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
 import { FileText, Clock, Calendar } from 'lucide-react'
+import { PageContainer } from '@/components/PageContainer'
 
 interface Notification {
   id: number;
@@ -60,6 +61,7 @@ export default function Dashboard() {
   }
 
   return (
+    <PageContainer title="dashboard">
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
       
@@ -107,6 +109,7 @@ export default function Dashboard() {
 
       {/* Add more dashboard content here as needed */}
     </div>
+    </PageContainer>
   )
 }
 

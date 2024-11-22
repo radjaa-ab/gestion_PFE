@@ -6,17 +6,18 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface LayoutProps {
   hideSidebar?: boolean;
+  children?: React.ReactNode;
 }
 
-export function Layout({ hideSidebar = false }: LayoutProps) {
+export function Layout({ hideSidebar = false, children }: LayoutProps) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
+      <div className="flex min-h-screen w-full">
         {!hideSidebar && <Sidebar />}
-        <div className="flex flex-col flex-1 w-0 overflow-hidden">
+        <div className="flex flex-col flex-1">
           <Header />
-          <main className="flex-1 overflow-y-auto p-6">
-            <Outlet />
+          <main className="flex-1 p-6">
+            {children || <Outlet />}
           </main>
         </div>
       </div>

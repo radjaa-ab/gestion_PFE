@@ -1,16 +1,62 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Home, Users, FileText, Calendar, Settings, MessageSquare, ClipboardList, FileSignature, UserPlus, Package, Clock, Upload, Star, Users2, User, Bell, Mail, BookOpen } from 'lucide-react';
+import { useLocation, Link as RouterLink } from 'react-router-dom';
 import {
-  Sidebar as UISidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Divider,
+  Toolbar,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import {
+  Home,
+  People as Users,
+  Description as FileText,
+  Event as Calendar,
+  Settings,
+  Message as MessageSquare,
+  Assignment as ClipboardList,
+  NoteAdd as FileSignature,
+  PersonAdd as UserPlus,
+  Inventory as Package,
+  AccessTime as Clock,
+  CloudUpload as Upload,
+  Star,
+  Group,
+  Person,
+  Notifications,
+  Mail,
+  MenuBook as Book,
+} from '@mui/icons-material';
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  width: 240,
+  flexShrink: 0,
+  '& .MuiDrawer-paper': {
+    width: 240,
+    boxSizing: 'border-box',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+  },
+}));
+
+const StyledListItemButton = styled(ListItemButton)<{
+  component?: React.ElementType;
+  to?: string;
+}>(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  '&.Mui-selected': {
+    backgroundColor: theme.palette.primary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+}));
 
 const menuItems = [
   { id: 1, label: "Dashboard", icon: Home, link: "/" },
@@ -25,11 +71,11 @@ const menuItems = [
   { id: 10, label: "Schedule Management", icon: Clock, link: "/schedule-management" },
   { id: 11, label: "Submit Project", icon: Upload, link: "/submit-project" },
   { id: 12, label: "Teacher Evaluation", icon: Star, link: "/teacher-evaluation" },
-  { id: 13, label: "Team Formation", icon: Users2, link: "/team-formation" },
-  { id: 14, label: "User Profile", icon: User, link: "/user-profile" },
-  { id: 15, label: "Notifications", icon: Bell, link: "/notifications" },
+  { id: 13, label: "Team Formation", icon: Group, link: "/team-formation" },
+  { id: 14, label: "User Profile", icon: Person, link: "/user-profile" },
+  { id: 15, label: "Notifications", icon: Notifications, link: "/notifications" },
   { id: 16, label: "Contact", icon: Mail, link: "/contact" },
-  { id: 17, label: "PFE Selection", icon: BookOpen, link: "/pfe-selection" },
+  { id: 17, label: "PFE Selection", icon: Book, link: "/pfe-selection" },
   { id: 18, label: "Settings", icon: Settings, link: "/settings" },
 ];
 
@@ -37,39 +83,28 @@ export function Sidebar() {
   const location = useLocation();
 
   return (
-    <UISidebar className="h-screen bg-background border-r border-border">
-      <SidebarHeader className="flex items-center justify-between p-4">
-        <span className="text-xl font-bold text-foreground">PFE Platform</span>
-      </SidebarHeader>
-      <SidebarContent className="flex-grow overflow-y-auto">
-        <SidebarMenu>
-          {menuItems.map(({ id, label, icon: Icon, link }) => {
-            const isActive = location.pathname === link;
-            return (
-              <SidebarMenuItem key={id}>
-                <SidebarMenuButton asChild isActive={isActive}>
-                  <Link to={link} className={cn(
-                    "flex items-center py-2 px-4 text-sm font-medium rounded-md transition-colors",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}>
-                    <Icon className={cn("h-5 w-5 mr-3", isActive ? "text-primary-foreground" : "text-muted-foreground")} />
-                    <span>{label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter className="p-4 border-t border-border">
-        <div className="flex items-center">
-          <img src="/placeholder.svg?height=32&width=32" alt="User" className="h-8 w-8 rounded-full mr-3" />
-          <span className="text-sm font-medium text-foreground">John Doe</span>
-        </div>
-      </SidebarFooter>
-    </UISidebar>
+    <StyledDrawer variant="permanent" anchor="left">
+      <Toolbar />
+      <Typography variant="h6" sx={{ p: 2, textAlign: 'center' }}>
+        PFE Platform
+      </Typography>
+      <Divider />
+      <List>
+        {menuItems.map(({ id, label, icon: Icon, link }) => (
+          <StyledListItemButton
+            key={id}
+            selected={location.pathname === link}
+            component={RouterLink}
+            to={link}
+          >
+            <ListItemIcon sx={{ color: 'primary.contrastText' }}>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText primary={label} />
+          </StyledListItemButton>
+        ))}
+      </List>
+    </StyledDrawer>
   );
 }
 
