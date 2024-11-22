@@ -37,11 +37,11 @@ export function Sidebar() {
   const location = useLocation();
 
   return (
-    <UISidebar className="bg-background border-r border-border">
+    <UISidebar className="h-screen bg-background border-r border-border">
       <SidebarHeader className="flex items-center justify-between p-4">
         <span className="text-xl font-bold text-foreground">PFE Platform</span>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex-grow overflow-y-auto">
         <SidebarMenu>
           {menuItems.map(({ id, label, icon: Icon, link }) => {
             const isActive = location.pathname === link;

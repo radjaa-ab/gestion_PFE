@@ -23,33 +23,64 @@ import Contact from './pages/Contact';
 import PfeSelection from './pages/PfeSelection';
 import { Toaster } from '@/components/ui/toaster';
 
+
+// MUI Theme Configuration
+const theme = createTheme({
+  palette: {
+    mode: 'dark', // Change to 'dark' if needed
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
+
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/feedback-submission" element={<FeedbackSubmission />} />
-          <Route path="/progress-report" element={<ProgressReport />} />
-          <Route path="/project-proposal" element={<ProjectProposal />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/resource-request" element={<ResourceRequest />} />
-          <Route path="/schedule-management" element={<ScheduleManagement />} />
-          <Route path="/submit-project" element={<SubmitProject />} />
-          <Route path="/teacher-evaluation" element={<TeacherEvaluation />} />
-          <Route path="/team-formation" element={<TeamFormation />} />
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/pfe-selection" element={<PfeSelection />} />
-        </Routes>
-      </Layout>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Toaster />
-    </Router>
+      <Router>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/feedback-submission" element={<FeedbackSubmission />} />
+            <Route path="/progress-report" element={<ProgressReport />} />
+            <Route path="/project-proposal" element={<ProjectProposal />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/resource-request" element={<ResourceRequest />} />
+            <Route path="/schedule-management" element={<ScheduleManagement />} />
+            <Route path="/submit-project" element={<SubmitProject />} />
+            <Route path="/teacher-evaluation" element={<TeacherEvaluation />} />
+            <Route path="/team-formation" element={<TeamFormation />} />
+            <Route path="/user-profile" element={<UserProfile />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/pfe-selection" element={<PfeSelection />} />
+          </Route>
+
+          {/* Routes without Sidebar */}
+          <Route element={<Layout hideSidebar={true} />}>
+            <Route path="/home" element={<Home />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
+}
+
+function Home() {
+  return (
+    <div>
+      <h1>Home Page</h1>
+      <p>This is the home page without the sidebar.</p>
+    </div>
   );
 }
 

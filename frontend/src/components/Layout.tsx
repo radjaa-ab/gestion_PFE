@@ -1,23 +1,24 @@
 import React from 'react';
-import { Sidebar } from './ui/sidebar';
-import { Header } from './ui/header';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { Outlet } from 'react-router-dom';
+import { Sidebar } from './sidebar';
+import { Header } from './header';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  hideSidebar?: boolean;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ hideSidebar = false }: LayoutProps) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background text-foreground">
-        <Sidebar />
-        <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
+        {!hideSidebar && <Sidebar />}
+        <div className="flex flex-col flex-1 w-0 overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6">
-            {children}
+          <main className="flex-1 overflow-y-auto p-6">
+            <Outlet />
           </main>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
