@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, Users, FileText, Calendar, Settings, MessageSquare, ClipboardList, FileSignature, UserPlus, Package, Clock, Upload, Star, Users2, User } from 'lucide-react';
+import { Home, Users, FileText, Calendar, Settings, MessageSquare, ClipboardList, FileSignature, UserPlus, Package, Clock, Upload, Star, Users2, User, Bell, Mail, BookOpen } from 'lucide-react';
 import {
   Sidebar as UISidebar,
   SidebarContent,
@@ -27,7 +27,10 @@ const menuItems = [
   { id: 12, label: "Teacher Evaluation", icon: Star, link: "/teacher-evaluation" },
   { id: 13, label: "Team Formation", icon: Users2, link: "/team-formation" },
   { id: 14, label: "User Profile", icon: User, link: "/user-profile" },
-  { id: 15, label: "Settings", icon: Settings, link: "/settings" },
+  { id: 15, label: "Notifications", icon: Bell, link: "/notifications" },
+  { id: 16, label: "Contact", icon: Mail, link: "/contact" },
+  { id: 17, label: "PFE Selection", icon: BookOpen, link: "/pfe-selection" },
+  { id: 18, label: "Settings", icon: Settings, link: "/settings" },
 ];
 
 export function Sidebar() {
